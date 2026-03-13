@@ -1,0 +1,37 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: tazzina
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - tazzina_pgdata_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d tazzina"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+        GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+        AUTH_SECRET: ${AUTH_SECRET}
+        AUTH_URL: ${AUTH_URL}
+        ORIGIN: ${ORIGIN}
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/tazzina
+      AUTH_URL: ${AUTH_URL}
+      ORIGIN: ${ORIGIN}
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  tazzina_pgdata_prod:

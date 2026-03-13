@@ -1,0 +1,3 @@
+-- Template: promote your account to admin after first login
+-- Replace the email below with your Google account email
+-- UPDATE users SET role = 'admin' WHERE email = 'your.email@gmail.com';

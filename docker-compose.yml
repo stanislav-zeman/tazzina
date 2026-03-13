@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: tazzina
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - tazzina_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d tazzina"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5432:5432"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/tazzina
+      AUTH_URL: http://localhost:5173
+      ORIGIN: http://localhost:5173
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.svelte-kit
+    ports:
+      - "5173:5173"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  tazzina_pgdata:
