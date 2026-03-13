@@ -36,8 +36,6 @@ RUN pnpm install --frozen-lockfile --prod
 
 COPY --from=builder /app/build ./build
 COPY migrations ./migrations
-COPY scripts ./scripts
-COPY scripts/tsconfig.json ./scripts/tsconfig.json
 
 EXPOSE 3000
 

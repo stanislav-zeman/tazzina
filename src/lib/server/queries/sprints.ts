@@ -42,12 +42,14 @@ export async function getSprintById(id: string): Promise<Sprint | null> {
   return rows[0] ?? null;
 }
 
-export async function getAllActiveSprintsWithTeam(): Promise<(Sprint & { team_name: string })[]> {
+export async function getAllActiveSprintsWithTeam(userId: string): Promise<(Sprint & { team_name: string })[]> {
   return db<(Sprint & { team_name: string })[]>`
     SELECT s.*, t.name as team_name FROM sprints s
     JOIN teams t ON t.id = s.team_id
+    JOIN user_teams ut ON ut.team_id = t.id
     WHERE s.start_date <= CURRENT_DATE
       AND s.end_date >= CURRENT_DATE
+      AND ut.user_id = ${userId}
     ORDER BY t.name, s.start_date DESC
   `;
 }

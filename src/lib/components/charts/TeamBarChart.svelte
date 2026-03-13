@@ -1,16 +1,8 @@
 <script lang="ts">
-  import { Bar } from 'svelte-chartjs';
-  import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend
-  } from 'chart.js';
+  import { onMount } from 'svelte';
+  import { Chart, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from 'chart.js';
 
-  ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+  Chart.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
   interface Props {
     chartData: {
@@ -24,21 +16,31 @@
   }
   let { chartData }: Props = $props();
 
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: { display: false },
-      title: { display: false }
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: { stepSize: 1 }
+  let canvas: HTMLCanvasElement;
+  let chart = $state<Chart | undefined>(undefined);
+
+  onMount(() => {
+    chart = new Chart(canvas, {
+      type: 'bar',
+      data: chartData,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
       }
+    });
+    return () => chart?.destroy();
+  });
+
+  $effect(() => {
+    if (chart) {
+      chart.data = chartData;
+      chart.update();
     }
-  };
+  });
 </script>
 
-<div class="relative h-64">
-  <Bar data={chartData} {options} />
+<div class="relative h-64 w-full">
+  <canvas bind:this={canvas}></canvas>
 </div>

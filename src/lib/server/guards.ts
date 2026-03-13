@@ -16,3 +16,12 @@ export async function requireAdmin(event: RequestEvent) {
   }
   return session;
 }
+
+export async function requireTeamManager(event: RequestEvent, teamId: string) {
+  const session = await requireAuth(event);
+  if (session.user.role === 'admin') return session;
+  const { isTeamManager } = await import('./queries/user_teams.js');
+  const manages = await isTeamManager(session.user.id, teamId);
+  if (!manages) redirect(303, '/');
+  return session;
+}

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { signIn } from '@auth/sveltekit/client';
+  import { Coffee } from 'lucide-svelte';
 </script>
 
 <svelte:head>
@@ -9,7 +10,7 @@
 <div class="min-h-screen flex items-center justify-center bg-background">
   <div class="w-full max-w-md space-y-8 p-8">
     <div class="text-center">
-      <div class="text-6xl mb-4">☕</div>
+      <div class="flex justify-center mb-4"><Coffee size={64} /></div>
       <h1 class="text-3xl font-bold text-foreground">Tazzina</h1>
       <p class="mt-2 text-muted-foreground">Track your team's coffee consumption</p>
     </div>

@@ -47,7 +47,13 @@
           <tr class="border-t border-border">
             <td class="px-4 py-3 text-foreground">{team.name}</td>
             <td class="px-4 py-3">
-              <div class="flex gap-2">
+              <div class="flex gap-2 items-center">
+                <a
+                  href="/admin/sprints?team={team.id}"
+                  class="px-2 py-1 bg-secondary text-secondary-foreground rounded text-xs hover:bg-secondary/80"
+                >
+                  Sprints
+                </a>
                 <form method="POST" action="?/rename" use:enhance class="flex gap-2">
                   <input type="hidden" name="id" value={team.id} />
                   <input

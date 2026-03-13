@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
   import type { PageData } from './$types';
+  import ConsumptionLineChart from '$lib/components/charts/ConsumptionLineChart.svelte';
+  import TeamBarChart from '$lib/components/charts/TeamBarChart.svelte';
 
   interface Props {
     data: PageData;
@@ -8,7 +9,7 @@
   let { data }: Props = $props();
 
   // Build line chart data: teams x sprints
-  const lineChartData = $derived(() => {
+  const lineChartData = $derived.by(() => {
     const teamMap = new Map<string, { name: string; data: Map<string, number> }>();
     for (const s of data.summaries) {
       if (!teamMap.has(s.team_id)) {
@@ -30,7 +31,7 @@
   });
 
   // Bar chart: per-user totals
-  const barChartData = $derived(() => {
+  const barChartData = $derived.by(() => {
     const users = [...new Map(data.userStats.map((u) => [u.user_id, u.user_name])).entries()];
     const totals = data.userStats.reduce(
       (acc, s) => {
@@ -62,14 +63,10 @@
 
   <div class="rounded-lg border border-border bg-card p-6">
     <h2 class="text-lg font-semibold mb-4">Cups per Sprint (all teams)</h2>
-    {#if browser && data.summaries.length > 0}
-      {#await import('$lib/components/charts/ConsumptionLineChart.svelte') then { default: Chart }}
-        <Chart chartData={lineChartData()} />
-      {/await}
-    {:else if data.summaries.length === 0}
-      <p class="text-muted-foreground text-sm">No data yet.</p>
+    {#if data.summaries.length > 0}
+      <ConsumptionLineChart chartData={lineChartData} />
     {:else}
-      <p class="text-muted-foreground text-sm">Loading chart...</p>
+      <p class="text-muted-foreground text-sm">No data yet.</p>
     {/if}
   </div>
 
@@ -88,14 +85,10 @@
         </select>
       </form>
     </div>
-    {#if browser && data.userStats.length > 0}
-      {#await import('$lib/components/charts/TeamBarChart.svelte') then { default: Chart }}
-        <Chart chartData={barChartData()} />
-      {/await}
-    {:else if data.userStats.length === 0}
-      <p class="text-muted-foreground text-sm">No data for this sprint.</p>
+    {#if data.userStats.length > 0}
+      <TeamBarChart chartData={barChartData} />
     {:else}
-      <p class="text-muted-foreground text-sm">Loading chart...</p>
+      <p class="text-muted-foreground text-sm">No data for this sprint.</p>
     {/if}
   </div>
 </div>

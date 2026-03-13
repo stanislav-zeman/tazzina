@@ -40,6 +40,7 @@ export interface UserTeam {
   user_id: string;
   team_id: string;
   joined_at: Date;
+  is_manager: boolean;
 }
 
 export interface Sprint {

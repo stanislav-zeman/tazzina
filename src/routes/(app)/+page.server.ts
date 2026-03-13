@@ -2,8 +2,9 @@ import { getAllActiveSprintsWithTeam } from '$lib/server/queries/sprints.js';
 import { db } from '$lib/server/db.js';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async () => {
-  const activeSprints = await getAllActiveSprintsWithTeam();
+export const load: PageServerLoad = async ({ locals }) => {
+  const session = await locals.auth();
+  const activeSprints = await getAllActiveSprintsWithTeam(session!.user.id);
 
   // Get cup totals for each active sprint
   const sprintIds = activeSprints.map((s) => s.id);

@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { PageData } from './$types';
+  import { Coffee } from 'lucide-svelte';
 
   interface Props {
     data: PageData;
@@ -22,7 +23,7 @@
       href="/log"
       class="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 text-sm font-medium"
     >
-      ☕ Log Coffee
+      <Coffee size={16} class="mr-1.5" /> Log Coffee
     </a>
   </div>
 

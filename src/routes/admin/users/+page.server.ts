@@ -1,6 +1,6 @@
 import { listUsers } from '$lib/server/queries/users.js';
 import { listTeams } from '$lib/server/queries/teams.js';
-import { getUserTeams, addMember, removeMember } from '$lib/server/queries/user_teams.js';
+import { getUserTeams, addMember, removeMember, setTeamManager } from '$lib/server/queries/user_teams.js';
 import { setRole } from '$lib/server/queries/users.js';
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
@@ -43,6 +43,15 @@ export const actions: Actions = {
     const teamId = data.get('team_id')?.toString();
     if (!userId || !teamId) return fail(400, { error: 'Invalid input' });
     await removeMember(userId, teamId);
+    return { success: true };
+  },
+  setTeamManager: async ({ request }) => {
+    const data = await request.formData();
+    const userId = data.get('user_id')?.toString();
+    const teamId = data.get('team_id')?.toString();
+    const isManager = data.get('is_manager') === 'true';
+    if (!userId || !teamId) return fail(400, { error: 'Invalid input' });
+    await setTeamManager(userId, teamId, isManager);
     return { success: true };
   }
 };

@@ -31,13 +31,16 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async jwt(params: any) {
-      const { token, account, profile } = params;
+      const { token, account, profile, user } = params;
       if (account?.provider === 'google' && profile?.sub) {
         const { findByGoogleId } = await import('./queries/users.js');
         const dbUser = await findByGoogleId(profile.sub);
         if (dbUser) {
           token.sub = dbUser.id;
           token.role = dbUser.role;
+        }
+        if (user?.image) {
+          token.picture = user.image;
         }
       }
       return token;
@@ -50,6 +53,9 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
       }
       if (token.role) {
         session.user.role = token.role as 'admin' | 'user';
+      }
+      if (token.picture) {
+        session.user.image = token.picture;
       }
       return session;
     }
