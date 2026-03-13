@@ -38,7 +38,8 @@ RUN pnpm install --frozen-lockfile --prod
 
 COPY --from=builder /app/build ./build
 COPY migrations ./migrations
+COPY docker ./docker
 
-EXPOSE 3000
+EXPOSE 8080
 
 CMD ["/bin/sh", "/app/docker/entrypoint.prod.sh"]
