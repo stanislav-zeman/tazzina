@@ -4,6 +4,7 @@ import { env } from "$env/dynamic/private";
 import { upsertUser } from "./queries/users.js";
 
 export const { handle, signIn, signOut } = SvelteKitAuth({
+  trustHost: true,
   providers: [
     Google({
       clientId: env.GOOGLE_CLIENT_ID,
