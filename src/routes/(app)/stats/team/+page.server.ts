@@ -1,6 +1,6 @@
 import { listTeams } from '$lib/server/queries/teams.js';
 import { aggregateByTeamSprint, getUserStatsForSprint } from '$lib/server/queries/coffee_logs.js';
-import { listSprints } from '$lib/server/queries/sprints.js';
+import { listSprints, getActiveSprint } from '$lib/server/queries/sprints.js';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ url }: { url: URL }) => {
@@ -8,24 +8,41 @@ export const load: PageServerLoad = async ({ url }: { url: URL }) => {
   const selectedTeamId = url.searchParams.get('team') ?? teams[0]?.id ?? '';
 
   let sprintSummaries: Awaited<ReturnType<typeof aggregateByTeamSprint>> = [];
-  let userStats: Awaited<ReturnType<typeof getUserStatsForSprint>> = [];
   let selectedSprintName = '';
+  let selectedSprintId = '';
+  let sprints: Awaited<ReturnType<typeof listSprints>> = [];
+
+  let allUserStats: Record<string, Awaited<ReturnType<typeof getUserStatsForSprint>>> = {};
 
   if (selectedTeamId) {
-    sprintSummaries = await aggregateByTeamSprint(selectedTeamId);
-    const sprints = await listSprints(selectedTeamId);
-    const latestSprint = sprints[0];
-    if (latestSprint) {
-      userStats = await getUserStatsForSprint(latestSprint.id);
-      selectedSprintName = latestSprint.name;
+    [sprintSummaries, sprints] = await Promise.all([
+      aggregateByTeamSprint(selectedTeamId),
+      listSprints(selectedTeamId)
+    ]);
+
+    const activeSprint = await getActiveSprint(selectedTeamId);
+    const defaultSprint = activeSprint ?? sprints[0] ?? null;
+    const requestedSprintId = url.searchParams.get('sprint');
+    const selectedSprint =
+      (requestedSprintId ? sprints.find((s) => s.id === requestedSprintId) : null) ?? defaultSprint;
+
+    if (selectedSprint) {
+      selectedSprintName = selectedSprint.name;
+      selectedSprintId = selectedSprint.id;
     }
+
+    allUserStats = Object.fromEntries(
+      await Promise.all(sprints.map(async (s) => [s.id, await getUserStatsForSprint(s.id)]))
+    );
   }
 
   return {
     teams,
     selectedTeamId,
     sprintSummaries,
-    userStats,
-    selectedSprintName
+    allUserStats,
+    selectedSprintName,
+    selectedSprintId,
+    sprints
   };
 };

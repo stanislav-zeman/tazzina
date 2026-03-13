@@ -8,6 +8,8 @@
   }
   let { data }: Props = $props();
 
+  let selectedSprintId = $state(data.selectedSprintId);
+
   const lineChartData = $derived.by(() => {
     const sprints = [...data.sprintSummaries].reverse();
     const color = sprints[0]?.chart_color ?? data.teams.find((t) => t.id === data.selectedTeamId)?.chart_color ?? '#3b82f6';
@@ -27,7 +29,7 @@
 
   const leaderboard = $derived.by(() => {
     const totals = new Map<string, { name: string; avatar: string | null; color: string; cups: number }>();
-    for (const s of data.userStats) {
+    for (const s of data.allUserStats[selectedSprintId] ?? []) {
       if (!totals.has(s.user_id)) {
         totals.set(s.user_id, { name: s.user_name, avatar: s.user_avatar_url, color: s.chart_color, cups: 0 });
       }
@@ -54,17 +56,19 @@
 
 <div class="space-y-6">
   <div class="flex justify-end">
-    <form method="GET">
-      <select
-        name="team"
-        onchange={(e) => (e.currentTarget as HTMLSelectElement).form?.submit()}
-        class="rounded-md border border-input bg-background px-3 py-1.5 text-sm"
-      >
-        {#each data.teams as team}
-          <option value={team.id} selected={team.id === data.selectedTeamId}>{team.name}</option>
-        {/each}
-      </select>
-    </form>
+    <select
+      onchange={(e) => {
+        const u = new URL(window.location.href);
+        u.searchParams.set('team', (e.currentTarget as HTMLSelectElement).value);
+        u.searchParams.delete('sprint');
+        window.location.href = u.toString();
+      }}
+      class="rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+    >
+      {#each data.teams as team}
+        <option value={team.id} selected={team.id === data.selectedTeamId}>{team.name}</option>
+      {/each}
+    </select>
   </div>
 
   <div class="rounded-lg border border-border bg-card p-6">
@@ -77,36 +81,47 @@
   </div>
 
   <div class="rounded-lg border border-border bg-card p-6">
-    <h2 class="text-lg font-semibold mb-4">
-      Cups per Person — {data.selectedSprintName || 'Latest Sprint'}
-    </h2>
-    {#if leaderboard.length > 0}
-      <TeamBarChart chartData={barChartData} />
-    {:else}
-      <p class="text-muted-foreground text-sm">No data for this sprint.</p>
-    {/if}
-  </div>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold">Sprint Report</h2>
+      {#if data.sprints.length > 1}
+        <select
+          bind:value={selectedSprintId}
+          onchange={() => {
+            const u = new URL(window.location.href);
+            u.searchParams.set('sprint', selectedSprintId);
+            history.replaceState({}, '', u.toString());
+          }}
+          class="rounded-md border border-input bg-background px-3 py-1.5 text-sm"
+        >
+          {#each data.sprints as sprint}
+            <option value={sprint.id}>{sprint.name}</option>
+          {/each}
+        </select>
+      {:else if data.selectedSprintName}
+        <span class="text-sm text-muted-foreground">{data.selectedSprintName}</span>
+      {/if}
+    </div>
 
-  <div class="rounded-lg border border-border bg-card p-6">
-    <h2 class="text-lg font-semibold mb-4">
-      Leaderboard — {data.selectedSprintName || 'Latest Sprint'}
-    </h2>
     {#if leaderboard.length > 0}
-      <div class="space-y-2">
-        {#each leaderboard as member, i}
-          <div class="flex items-center gap-3 py-2 {i < leaderboard.length - 1 ? 'border-b border-border' : ''}">
-            <span class="w-6 text-sm font-medium text-muted-foreground">{i + 1}.</span>
-            {#if member.avatar}
-              <img src={member.avatar} alt={member.name} class="w-7 h-7 rounded-full" />
-            {:else}
-              <div class="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
-                {member.name[0]}
-              </div>
-            {/if}
-            <span class="flex-1 text-sm font-medium">{member.name}</span>
-            <span class="text-sm font-semibold">{member.cups} cups</span>
-          </div>
-        {/each}
+      <div class="space-y-6">
+        <TeamBarChart chartData={barChartData} />
+
+        <div class="space-y-2">
+          {#each leaderboard as member, i}
+            <div class="flex items-center gap-3 py-2 {i < leaderboard.length - 1 ? 'border-b border-border' : ''}">
+              <span class="w-6 text-sm font-medium text-muted-foreground">{i + 1}.</span>
+              {#if member.avatar}
+                <img src={member.avatar} alt={member.name} class="w-7 h-7 rounded-full" />
+              {:else}
+                <div class="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
+                  {member.name[0]}
+                </div>
+              {/if}
+              <span class="flex-1 text-sm font-medium">{member.name}</span>
+              <span class="text-sm font-semibold">{member.cups} cups</span>
+            </div>
+          {/each}
+        </div>
       </div>
     {:else}
       <p class="text-muted-foreground text-sm">No data for this sprint.</p>
