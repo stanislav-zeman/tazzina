@@ -2,7 +2,7 @@ import { fail, redirect } from "@sveltejs/kit";
 import { getUserTeams } from "$lib/server/queries/user_teams.js";
 import { getActiveSprint } from "$lib/server/queries/sprints.js";
 import { logCoffee } from "$lib/server/queries/coffee_logs.js";
-import { COFFEE_TYPES } from "$lib/types.js";
+import { COFFEE_TYPES, type CoffeeType } from "$lib/types.js";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -48,7 +48,7 @@ export const actions: Actions = {
       user_id: session!.user.id,
       sprint_id: sprintId,
       team_id: teamId,
-      coffee_type: coffeeType as any,
+      coffee_type: coffeeType as CoffeeType,
       cup_count: cupCount,
       logged_at: loggedAt,
     });

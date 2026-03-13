@@ -8,6 +8,7 @@
   }
   let { data }: Props = $props();
 
+  // eslint-disable-next-line svelte/valid-compile
   let selectedSprintName = $state(data.selectedSprintName);
 
   const lineChartData = $derived.by(() => {
