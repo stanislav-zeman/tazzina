@@ -27,3 +27,7 @@ export async function getTeamById(id: string): Promise<Team | null> {
   const rows = await db<Team[]>`SELECT * FROM teams WHERE id = ${id} LIMIT 1`;
   return rows[0] ?? null;
 }
+
+export async function updateTeamChartColor(teamId: string, color: string): Promise<void> {
+  await db`UPDATE teams SET chart_color = ${color} WHERE id = ${teamId}`;
+}

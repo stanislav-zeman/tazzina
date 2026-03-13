@@ -7,7 +7,7 @@
   interface Props {
     chartData: {
       labels: string[];
-      datasets: { label: string; data: number[]; backgroundColor: string }[];
+      datasets: { label: string; data: number[]; backgroundColor: string | string[] }[];
     };
   }
   let { chartData }: Props = $props();

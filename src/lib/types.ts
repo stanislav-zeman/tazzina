@@ -26,6 +26,7 @@ export interface User {
   name: string;
   avatar_url: string | null;
   role: UserRole;
+  chart_color: string;
   created_at: Date;
   updated_at: Date;
 }
@@ -33,6 +34,7 @@ export interface User {
 export interface Team {
   id: string;
   name: string;
+  chart_color: string;
   created_at: Date;
 }
 
@@ -73,6 +75,7 @@ export interface SprintSummary {
   sprint_name: string;
   team_id: string;
   team_name: string;
+  chart_color: string;
   total_cups: number;
   log_count: number;
 }
@@ -81,6 +84,7 @@ export interface UserSprintStats {
   user_id: string;
   user_name: string;
   user_avatar_url: string | null;
+  chart_color: string;
   total_cups: number;
   coffee_type: CoffeeType;
 }

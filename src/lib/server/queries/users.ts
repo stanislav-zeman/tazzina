@@ -38,3 +38,7 @@ export async function getUserById(id: string): Promise<User | null> {
   const rows = await db<User[]>`SELECT * FROM users WHERE id = ${id} LIMIT 1`;
   return rows[0] ?? null;
 }
+
+export async function updateChartColor(userId: string, color: string): Promise<void> {
+  await db`UPDATE users SET chart_color = ${color} WHERE id = ${userId}`;
+}

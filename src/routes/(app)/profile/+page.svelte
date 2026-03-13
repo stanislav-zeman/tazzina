@@ -47,6 +47,25 @@
   </div>
 
   <div class="rounded-lg border border-border bg-card p-6">
+    <h2 class="text-lg font-semibold mb-4">Chart Color</h2>
+    <p class="text-sm text-muted-foreground mb-4">Your bar color in team statistics charts.</p>
+    <form method="POST" action="?/updateColor" class="flex items-center gap-4">
+      <input
+        type="color"
+        name="color"
+        value={data.chartColor}
+        class="h-10 w-16 cursor-pointer rounded border border-input bg-background p-0.5"
+      />
+      <button
+        type="submit"
+        class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
+      >
+        Save
+      </button>
+    </form>
+  </div>
+
+  <div class="rounded-lg border border-border bg-card p-6">
     <h2 class="text-lg font-semibold mb-4">Teams</h2>
     {#if data.teams.length === 0}
       <p class="text-sm text-muted-foreground">Not a member of any team yet.</p>

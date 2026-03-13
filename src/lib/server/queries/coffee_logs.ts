@@ -34,13 +34,14 @@ export async function aggregateByTeamSprint(teamId: string): Promise<SprintSumma
       s.name as sprint_name,
       t.id as team_id,
       t.name as team_name,
+      t.chart_color,
       COALESCE(SUM(cl.cup_count), 0)::int as total_cups,
       COUNT(cl.id)::int as log_count
     FROM sprints s
     JOIN teams t ON t.id = s.team_id
     LEFT JOIN coffee_logs cl ON cl.sprint_id = s.id
     WHERE s.team_id = ${teamId}
-    GROUP BY s.id, s.name, t.id, t.name
+    GROUP BY s.id, s.name, t.id, t.name, t.chart_color
     ORDER BY s.start_date DESC
   `;
 }
@@ -51,12 +52,13 @@ export async function getUserStatsForSprint(sprintId: string): Promise<UserSprin
       u.id as user_id,
       u.name as user_name,
       u.avatar_url as user_avatar_url,
+      u.chart_color,
       SUM(cl.cup_count)::int as total_cups,
       cl.coffee_type
     FROM coffee_logs cl
     JOIN users u ON u.id = cl.user_id
     WHERE cl.sprint_id = ${sprintId}
-    GROUP BY u.id, u.name, u.avatar_url, cl.coffee_type
+    GROUP BY u.id, u.name, u.avatar_url, u.chart_color, cl.coffee_type
     ORDER BY total_cups DESC
   `;
 }
@@ -80,6 +82,23 @@ export async function getPersonalStats(userId: string): Promise<(SprintSummary &
   `;
 }
 
+export async function getTeamTotals(): Promise<{ team_id: string; team_name: string; chart_color: string; total_cups: number; log_count: number; sprint_count: number }[]> {
+  return db<{ team_id: string; team_name: string; chart_color: string; total_cups: number; log_count: number; sprint_count: number }[]>`
+    SELECT
+      t.id as team_id,
+      t.name as team_name,
+      t.chart_color,
+      COALESCE(SUM(cl.cup_count), 0)::int as total_cups,
+      COUNT(cl.id)::int as log_count,
+      COUNT(DISTINCT s.id)::int as sprint_count
+    FROM teams t
+    LEFT JOIN sprints s ON s.team_id = t.id
+    LEFT JOIN coffee_logs cl ON cl.sprint_id = s.id
+    GROUP BY t.id, t.name, t.chart_color
+    ORDER BY total_cups DESC
+  `;
+}
+
 export async function getAllTeamsSprintSummaries(): Promise<SprintSummary[]> {
   return db<SprintSummary[]>`
     SELECT
@@ -87,12 +106,13 @@ export async function getAllTeamsSprintSummaries(): Promise<SprintSummary[]> {
       s.name as sprint_name,
       t.id as team_id,
       t.name as team_name,
+      t.chart_color,
       COALESCE(SUM(cl.cup_count), 0)::int as total_cups,
       COUNT(cl.id)::int as log_count
     FROM sprints s
     JOIN teams t ON t.id = s.team_id
     LEFT JOIN coffee_logs cl ON cl.sprint_id = s.id
-    GROUP BY s.id, s.name, t.id, t.name
+    GROUP BY s.id, s.name, t.id, t.name, t.chart_color
     ORDER BY s.start_date DESC
   `;
 }

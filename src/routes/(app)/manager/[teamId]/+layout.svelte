@@ -4,7 +4,7 @@
 
   interface Props {
     children: Snippet;
-    data: { team: { id: string; name: string } };
+    data: { team: { id: string; name: string; chart_color: string } };
   }
   let { children, data }: Props = $props();
 </script>

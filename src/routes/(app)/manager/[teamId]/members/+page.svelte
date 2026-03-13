@@ -3,7 +3,7 @@
   import type { PageData, ActionData } from './$types';
 
   interface Props {
-    data: PageData;
+    data: PageData & { team: { chart_color: string } };
     form: ActionData;
   }
   let { data, form }: Props = $props();
@@ -14,6 +14,24 @@
 </svelte:head>
 
 <div class="space-y-6">
+  <div class="rounded-lg border border-border bg-card p-4">
+    <h3 class="text-sm font-medium mb-3">Team chart color</h3>
+    <form method="POST" action="?/updateColor" use:enhance class="flex items-center gap-3">
+      <input
+        type="color"
+        name="color"
+        value={data.team.chart_color}
+        class="h-9 w-14 cursor-pointer rounded border border-input bg-background p-0.5"
+      />
+      <button
+        type="submit"
+        class="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:opacity-90"
+      >
+        Save
+      </button>
+    </form>
+  </div>
+
   {#if form?.error}
     <div class="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{form.error}</div>
   {/if}
