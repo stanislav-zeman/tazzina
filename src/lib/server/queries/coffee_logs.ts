@@ -1,5 +1,10 @@
-import { db } from '../db.js';
-import type { CoffeeLog, CoffeeType, SprintSummary, UserSprintStats } from '../../types.js';
+import { db } from "../db.js";
+import type {
+  CoffeeLog,
+  CoffeeType,
+  SprintSummary,
+  UserSprintStats,
+} from "../../types.js";
 
 export async function logCoffee(data: {
   user_id: string;
@@ -17,8 +22,14 @@ export async function logCoffee(data: {
   return rows[0];
 }
 
-export async function getLogsForSprint(sprintId: string): Promise<(CoffeeLog & { user_name: string; user_avatar_url: string | null })[]> {
-  return db<(CoffeeLog & { user_name: string; user_avatar_url: string | null })[]>`
+export async function getLogsForSprint(
+  sprintId: string,
+): Promise<
+  (CoffeeLog & { user_name: string; user_avatar_url: string | null })[]
+> {
+  return db<
+    (CoffeeLog & { user_name: string; user_avatar_url: string | null })[]
+  >`
     SELECT cl.*, u.name as user_name, u.avatar_url as user_avatar_url
     FROM coffee_logs cl
     JOIN users u ON u.id = cl.user_id
@@ -27,7 +38,9 @@ export async function getLogsForSprint(sprintId: string): Promise<(CoffeeLog & {
   `;
 }
 
-export async function aggregateByTeamSprint(teamId: string): Promise<SprintSummary[]> {
+export async function aggregateByTeamSprint(
+  teamId: string,
+): Promise<SprintSummary[]> {
   return db<SprintSummary[]>`
     SELECT
       s.id as sprint_id,
@@ -46,7 +59,9 @@ export async function aggregateByTeamSprint(teamId: string): Promise<SprintSumma
   `;
 }
 
-export async function getUserStatsForSprint(sprintId: string): Promise<UserSprintStats[]> {
+export async function getUserStatsForSprint(
+  sprintId: string,
+): Promise<UserSprintStats[]> {
   return db<UserSprintStats[]>`
     SELECT
       u.id as user_id,
@@ -63,7 +78,9 @@ export async function getUserStatsForSprint(sprintId: string): Promise<UserSprin
   `;
 }
 
-export async function getPersonalStats(userId: string): Promise<(SprintSummary & { coffee_type: CoffeeType })[]> {
+export async function getPersonalStats(
+  userId: string,
+): Promise<(SprintSummary & { coffee_type: CoffeeType })[]> {
   return db<(SprintSummary & { coffee_type: CoffeeType })[]>`
     SELECT
       s.id as sprint_id,
@@ -82,8 +99,26 @@ export async function getPersonalStats(userId: string): Promise<(SprintSummary &
   `;
 }
 
-export async function getTeamTotals(): Promise<{ team_id: string; team_name: string; chart_color: string; total_cups: number; log_count: number; sprint_count: number }[]> {
-  return db<{ team_id: string; team_name: string; chart_color: string; total_cups: number; log_count: number; sprint_count: number }[]>`
+export async function getTeamTotals(): Promise<
+  {
+    team_id: string;
+    team_name: string;
+    chart_color: string;
+    total_cups: number;
+    log_count: number;
+    sprint_count: number;
+  }[]
+> {
+  return db<
+    {
+      team_id: string;
+      team_name: string;
+      chart_color: string;
+      total_cups: number;
+      log_count: number;
+      sprint_count: number;
+    }[]
+  >`
     SELECT
       t.id as team_id,
       t.name as team_name,

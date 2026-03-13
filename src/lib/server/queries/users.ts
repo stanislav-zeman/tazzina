@@ -1,5 +1,5 @@
-import { db } from '../db.js';
-import type { User } from '../../types.js';
+import { db } from "../db.js";
+import type { User } from "../../types.js";
 
 export async function findByGoogleId(googleId: string): Promise<User | null> {
   const rows = await db<User[]>`
@@ -30,7 +30,10 @@ export async function listUsers(): Promise<User[]> {
   return db<User[]>`SELECT * FROM users ORDER BY name`;
 }
 
-export async function setRole(userId: string, role: 'admin' | 'user'): Promise<void> {
+export async function setRole(
+  userId: string,
+  role: "admin" | "user",
+): Promise<void> {
   await db`UPDATE users SET role = ${role} WHERE id = ${userId}`;
 }
 
@@ -39,6 +42,9 @@ export async function getUserById(id: string): Promise<User | null> {
   return rows[0] ?? null;
 }
 
-export async function updateChartColor(userId: string, color: string): Promise<void> {
+export async function updateChartColor(
+  userId: string,
+  color: string,
+): Promise<void> {
   await db`UPDATE users SET chart_color = ${color} WHERE id = ${userId}`;
 }

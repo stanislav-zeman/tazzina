@@ -1,5 +1,5 @@
-import { db } from '../db.js';
-import type { Team } from '../../types.js';
+import { db } from "../db.js";
+import type { Team } from "../../types.js";
 
 export async function listTeams(): Promise<Team[]> {
   return db<Team[]>`SELECT * FROM teams ORDER BY name`;
@@ -12,7 +12,10 @@ export async function createTeam(name: string): Promise<Team> {
   return rows[0];
 }
 
-export async function renameTeam(id: string, name: string): Promise<Team | null> {
+export async function renameTeam(
+  id: string,
+  name: string,
+): Promise<Team | null> {
   const rows = await db<Team[]>`
     UPDATE teams SET name = ${name} WHERE id = ${id} RETURNING *
   `;
@@ -28,6 +31,9 @@ export async function getTeamById(id: string): Promise<Team | null> {
   return rows[0] ?? null;
 }
 
-export async function updateTeamChartColor(teamId: string, color: string): Promise<void> {
+export async function updateTeamChartColor(
+  teamId: string,
+  color: string,
+): Promise<void> {
   await db`UPDATE teams SET chart_color = ${color} WHERE id = ${teamId}`;
 }
