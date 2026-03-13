@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import {
     Chart,
+    LineController,
     CategoryScale,
     LinearScale,
     PointElement,
@@ -11,7 +12,7 @@
     Filler
   } from 'chart.js';
 
-  Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend, Filler);
+  Chart.register(LineController, CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend, Filler);
 
   interface Props {
     chartData: {
@@ -28,12 +29,11 @@
   let { chartData }: Props = $props();
 
   let canvas: HTMLCanvasElement;
-  let chart = $state<Chart | undefined>(undefined);
 
   onMount(() => {
-    chart = new Chart(canvas, {
+    const chart = new Chart(canvas, {
       type: 'line',
-      data: chartData,
+      data: JSON.parse(JSON.stringify(chartData)),
       options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -41,14 +41,7 @@
         scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
       }
     });
-    return () => chart?.destroy();
-  });
-
-  $effect(() => {
-    if (chart) {
-      chart.data = chartData;
-      chart.update();
-    }
+    return () => chart.destroy();
   });
 </script>
 
