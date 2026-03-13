@@ -1,5 +1,5 @@
-import { db } from '../db.js';
-import type { Sprint } from '../../types.js';
+import { db } from "../db.js";
+import type { Sprint } from "../../types.js";
 
 export async function listSprints(teamId: string): Promise<Sprint[]> {
   return db<Sprint[]>`
@@ -38,11 +38,15 @@ export async function deleteSprint(id: string): Promise<void> {
 }
 
 export async function getSprintById(id: string): Promise<Sprint | null> {
-  const rows = await db<Sprint[]>`SELECT * FROM sprints WHERE id = ${id} LIMIT 1`;
+  const rows = await db<
+    Sprint[]
+  >`SELECT * FROM sprints WHERE id = ${id} LIMIT 1`;
   return rows[0] ?? null;
 }
 
-export async function getAllActiveSprintsWithTeam(userId: string): Promise<(Sprint & { team_name: string })[]> {
+export async function getAllActiveSprintsWithTeam(
+  userId: string,
+): Promise<(Sprint & { team_name: string })[]> {
   return db<(Sprint & { team_name: string })[]>`
     SELECT s.*, t.name as team_name FROM sprints s
     JOIN teams t ON t.id = s.team_id

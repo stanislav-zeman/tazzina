@@ -1,6 +1,6 @@
-import { getAllActiveSprintsWithTeam } from '$lib/server/queries/sprints.js';
-import { db } from '$lib/server/db.js';
-import type { PageServerLoad } from './$types';
+import { getAllActiveSprintsWithTeam } from "$lib/server/queries/sprints.js";
+import { db } from "$lib/server/db.js";
+import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals }) => {
   const session = await locals.auth();
@@ -17,13 +17,15 @@ export const load: PageServerLoad = async ({ locals }) => {
       WHERE sprint_id = ANY(${sprintIds})
       GROUP BY sprint_id
     `;
-    cupTotals = Object.fromEntries(rows.map((r) => [r.sprint_id, r.total_cups]));
+    cupTotals = Object.fromEntries(
+      rows.map((r) => [r.sprint_id, r.total_cups]),
+    );
   }
 
   return {
     activeSprints: activeSprints.map((s) => ({
       ...s,
-      total_cups: cupTotals[s.id] ?? 0
-    }))
+      total_cups: cupTotals[s.id] ?? 0,
+    })),
   };
 };

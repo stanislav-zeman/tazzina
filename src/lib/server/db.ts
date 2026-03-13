@@ -1,9 +1,9 @@
-import postgres from 'postgres';
+import postgres from "postgres";
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
 if (!DATABASE_URL) {
-  throw new Error('DATABASE_URL environment variable is not set');
+  throw new Error("DATABASE_URL environment variable is not set");
 }
 
 declare global {
@@ -15,9 +15,10 @@ function createDb(): postgres.Sql {
   return postgres(DATABASE_URL!, {
     max: 10,
     idle_timeout: 20,
-    connect_timeout: 10
+    connect_timeout: 10,
   });
 }
 
 // HMR-safe singleton
-export const db: postgres.Sql = globalThis.__db ?? (globalThis.__db = createDb());
+export const db: postgres.Sql =
+  globalThis.__db ?? (globalThis.__db = createDb());

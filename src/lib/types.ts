@@ -1,23 +1,23 @@
 export type CoffeeType =
-  | 'espresso'
-  | 'americano'
-  | 'latte'
-  | 'cappuccino'
-  | 'flat_white'
-  | 'drip'
-  | 'other';
+  | "espresso"
+  | "americano"
+  | "latte"
+  | "cappuccino"
+  | "flat_white"
+  | "drip"
+  | "other";
 
 export const COFFEE_TYPES: { value: CoffeeType; label: string }[] = [
-  { value: 'espresso', label: 'Espresso' },
-  { value: 'americano', label: 'Americano' },
-  { value: 'latte', label: 'Latte' },
-  { value: 'cappuccino', label: 'Cappuccino' },
-  { value: 'flat_white', label: 'Flat White' },
-  { value: 'drip', label: 'Drip Coffee' },
-  { value: 'other', label: 'Other' }
+  { value: "espresso", label: "Espresso" },
+  { value: "americano", label: "Americano" },
+  { value: "latte", label: "Latte" },
+  { value: "cappuccino", label: "Cappuccino" },
+  { value: "flat_white", label: "Flat White" },
+  { value: "drip", label: "Drip Coffee" },
+  { value: "other", label: "Other" },
 ];
 
-export type UserRole = 'admin' | 'user';
+export type UserRole = "admin" | "user";
 
 export interface User {
   id: string;

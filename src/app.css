@@ -60,7 +60,9 @@
 @layer base {
   button,
   a {
-    transition: background-color 150ms ease, color 150ms ease;
+    transition:
+      background-color 150ms ease,
+      color 150ms ease;
   }
 
   button:hover,
